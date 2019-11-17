@@ -17,6 +17,9 @@ def alloyWeight():
     try:
         #select object
         objs = rs.GetObject("Select PolySurfaces",rs.filter.polysurface)
+        if objs is None:
+            print "Aborted"
+            return
         #check for naked edges
         if not rs.IsObjectSolid(objs):
             rs.ClearCommandHistory() 
