@@ -3,6 +3,7 @@
 # ORO-TOOLS v1.0.0 2019
 
 import rhinoscriptsyntax as rs
+import rhinoscript.userinterface as rd
 import Rhino as rhino
 
 def alloyWeight():
@@ -13,24 +14,26 @@ def alloyWeight():
     alloy = []
     for y in density:
         alloy.append(y)
-        
-    #select object
-    objs = rs.GetObject("\nSelect PolySurfaces",rs.filter.polysurface)
-    #check for naked edges
-    if not rs.IsObjectSolid(objs):
-        rs.ClearCommandHistory() 
-        print("\nPolySurface not solid")
-        return
-        
-    #check for valid selection
-    if objs:
-        choice = rs.ListBox(alloy,"Select Alloy","Alloys")
-        wgt = round(rs.SurfaceVolume(objs)[0] * density.get(choice),2) 
-        rs.ClearCommandHistory() 
-        print("\nVolume: " + str(round(rs.SurfaceVolume(objs)[0],2)) + " amounts to " + str(wgt) + "g of " + choice) 
-    else:
-        rs.ClearCommandHistory()
-        print("\nNo valid PolySurface Selected!")   
-    
+    try:
+        #select object
+        objs = rs.GetObject("Select PolySurfaces",rs.filter.polysurface)
+        #check for naked edges
+        if not rs.IsObjectSolid(objs):
+            rs.ClearCommandHistory() 
+            print("\nPolySurface not solid")
+            return
+        #check for valid selection
+        if objs:
+            choice = rd.ListBox(alloy,"Select Alloy","Alloys")
+            wgt = round(rs.SurfaceVolume(objs)[0] * density.get(choice),2) 
+            rs.ClearCommandHistory() 
+            print("\nVolume: " + str(round(rs.SurfaceVolume(objs)[0],2)) + " amounts to " + str(wgt) + "g of " + choice) 
+        else:
+            rs.ClearCommandHistory()
+            print("\nNo valid PolySurface Selected!")   
+    except:
+        print "Operation Aborted"
+        Rhino.Commands.Result.Cancel
+
 if __name__ == "__main__":
     alloyWeight()
